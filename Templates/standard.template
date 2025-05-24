@@ -13,14 +13,17 @@
 		<enabledbrowse>[% enabledbrowse %]</enabledbrowse>
 		<track>
 			<data>
-				select {library},tracks.id from tracks[% IF includedcomment %],comments[% END %][% IF onlyCompilations or onlyNormalAlbums %],albums[% END %]
+				select {library},tracks.id from tracks[% IF includedcomment %],comments[% END %][% IF onlyCompilations or onlyNormalAlbums or externalLibraryAccountId %],albums[% END %]
 				where
-					[% IF onlyCompilations or onlyNormalAlbums %]
+					[% IF onlyCompilations or onlyNormalAlbums or externalLibraryAccountId %]
 					albums.id=tracks.album and
 					[% IF onlyCompilations %]
 					albums.compilation=1 and
 					[% ELSIF onlyNormalAlbums %]
 					albums.compilation=0 and
+					[% END %]
+					[% IF externalLibraryAccountId %]
+					albums.extId in (select extId from online_library where accountId = '[% externalLibraryAccountId %]') and
 					[% END %]
 					[% END %]
 					[% IF playlist %]
